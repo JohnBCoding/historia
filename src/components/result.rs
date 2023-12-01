@@ -47,18 +47,17 @@ pub fn result(props: &Props) -> Html {
 
         if !same.is_empty() {
             group_list.push(html! {<a href={format!("https://en.wikipedia.org/w/index.php?search={}&title=Special%3ASearch&ns0=1", same.join("+"))} target="_blank">{format!("{}", same.join(" "))}</a>});
-            same = Vec::new();
         }
 
         html! {
             <div class="col">
                 <p>{group_list}</p>
                 <p class="accent">
-                    <span class="date" name="year" onclick={&on_click}>{format!("{}", props.result.get("year").unwrap())}</span>
+                    <span class="date accent" name="year" onclick={&on_click}>{format!("{}", props.result.get("year").unwrap())}</span>
                     <span>{" / "}</span>
-                    <span class="date" name="month" onclick={&on_click}>{format!("{}", props.result.get("month").unwrap())}</span>
+                    <span class="date accent" name="month" onclick={&on_click}>{format!("{}", props.result.get("month").unwrap())}</span>
                     <span>{" / "}</span>
-                    <span class="date" name="day" onclick={&on_click}>{format!("{}", props.result.get("day").unwrap())}</span>
+                    <span class="date accent" name="day" onclick={&on_click}>{format!("{}", props.result.get("day").unwrap())}</span>
                 </p>
             </div>
 

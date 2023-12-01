@@ -36,7 +36,7 @@ pub fn search(props: &Props) -> Html {
 
     html! {
         <div class="row expand-x">
-            <input class="expand-x" id="search" placeholder="The Roman Empire perhaps?" onkeyup={&on_search} ref={search_ref}/>
+            <input class="expand-x" id="search" placeholder="Maybe 'Queen Elizabeth'" onkeyup={&on_search} ref={search_ref}/>
             <button onclick={&on_click}>{"Go"}</button>
         </div>
     }

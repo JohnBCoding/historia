@@ -50,7 +50,7 @@ pub fn content() -> Html {
                 let api_key = std::env!("API_KEY");
                 let search_value = current_search_state.deref().clone();
                 let search_uri = format!(
-                    "https://api.api-ninjas.com/v1/historicalevents?text={}offset={}",
+                    "https://api.api-ninjas.com/v1/historicalevents?{}&offset={}",
                     search_value,
                     *current_page_state + page_amt
                 );
@@ -140,13 +140,20 @@ pub fn content() -> Html {
                 {tags_html}
             </div>
             if !results_state.is_empty() {
-                <div class="col expand-y scroll">
+                <div class="col expand-x expand-y scroll">
                     {result_html}
                 </div>
-                <div class="row expand-x flex-end-y">
-                    <button name="back" onclick={&on_change_page}>{"BACK"}</button>
-                    <button class="flex-end-x" name="next" onclick={&on_change_page}>{"NEXT"}</button>
-                </div>
+                if results_state.len() >= 10 {
+                    <div class="row expand-x flex-end-y">
+                        if *current_page_state == 0 {
+                            <button class="expand-x" name="back" disabled={true} onclick={&on_change_page}>{"BACK"}</button>
+                        } else {
+                            <button class="expand-x" name="back" onclick={&on_change_page}>{"BACK"}</button>
+                        }
+
+                        <button class="expand-x flex-end-x" name="next" onclick={&on_change_page}>{"NEXT"}</button>
+                    </div>
+                }
             }
         </main>
     }
