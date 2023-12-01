@@ -76,7 +76,13 @@ pub fn content() -> Html {
         let current_page_state = current_page_state.clone();
         Callback::from(move |(key, value)| {
             let current_search = current_search_state.deref().clone();
-            let new_search = format!("{}&{}={}", current_search, key, value);
+            let new_search = {
+                if !current_search.contains(&key) {
+                    format!("{}&{}={}", current_search, key, value)
+                } else {
+                    current_search
+                }
+            };
 
             use gloo_console::log;
             log!(&new_search);

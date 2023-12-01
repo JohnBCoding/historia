@@ -21,6 +21,6 @@ pub fn tag(props: &Props) -> Html {
         })
     };
     html! {
-        <button class="tag" onclick={&on_click}>{&props.text}</button>
+        <button class="tag expand-x" onclick={&on_click}>{&props.text}</button>
     }
 }
