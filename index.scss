@@ -61,7 +61,8 @@ button:active {
     background-color: var(--background-color);
 }
 
-a {
+a,
+.tag {
     background-color: var(--background-color);
     text-decoration: none;
     font-size: 0.75rem;
@@ -69,11 +70,15 @@ a {
     transition: background-color 0.25s ease-out;
 }
 
-a:hover {
+a:hover,
+.date:hover,
+.tag:hover {
     background-color: var(--accent-color);
 }
 
-a:active {
+a:active,
+.date:active,
+.tag:hover {
     background-color: var(--secondary-color);
 }
 
@@ -133,6 +138,11 @@ p {
 
 .accent {
     color: var(--accent-color);
+}
+
+.date,
+.tag {
+    cursor: pointer;
 }
 
 /* || End General styles */

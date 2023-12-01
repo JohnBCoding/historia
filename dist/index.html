@@ -1,13 +1,40 @@
 <!DOCTYPE html><html><head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/historia/index-284a71e932ac3adf.css">
-        <base href="/historia/">
+        <link rel="stylesheet" href="/index-6da6ac61df220e16.css">
+        <base href="/">
         <title>Historia</title>
     
-<link rel="preload" href="/historia/historia-f6868ef66cbb1259_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
-<link rel="modulepreload" href="/historia/historia-f6868ef66cbb1259.js"></head>
+<link rel="preload" href="/historia-7188bdc4ba0ddeed_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
+<link rel="modulepreload" href="/historia-7188bdc4ba0ddeed.js"></head>
     <body>
     
 
-<script type="module">import init from '/historia/historia-f6868ef66cbb1259.js';init('/historia/historia-f6868ef66cbb1259_bg.wasm');</script></body></html>
+<script type="module">import init from '/historia-7188bdc4ba0ddeed.js';init('/historia-7188bdc4ba0ddeed_bg.wasm');</script><script>(function () {
+    var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    var url = protocol + '//' + window.location.host + '/_trunk/ws';
+    var poll_interval = 5000;
+    var reload_upon_connect = () => {
+        window.setTimeout(
+            () => {
+                // when we successfully reconnect, we'll force a
+                // reload (since we presumably lost connection to
+                // trunk due to it being killed, so it will have
+                // rebuilt on restart)
+                var ws = new WebSocket(url);
+                ws.onopen = () => window.location.reload();
+                ws.onclose = reload_upon_connect;
+            },
+            poll_interval);
+    };
+
+    var ws = new WebSocket(url);
+    ws.onmessage = (ev) => {
+        const msg = JSON.parse(ev.data);
+        if (msg.reload) {
+            window.location.reload();
+        }
+    };
+    ws.onclose = reload_upon_connect;
+})()
+</script></body></html>

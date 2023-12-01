@@ -8,7 +8,7 @@ yew = { version = "0.20.0", features = ["csr"] }
 wasm-bindgen = "0.2.84"
 wasm-bindgen-futures = "0.4.34"
 reqwasm = {version="0.5.0", features=["json"]}
-web-sys = {version = "0.3.61", features=["HtmlInputElement", "HtmlSelectElement", "HtmlTableRowElement", "HtmlDivElement","HtmlButtonElement"]} 
+web-sys = {version = "0.3.61", features=["HtmlInputElement", "HtmlSelectElement", "HtmlTableRowElement", "HtmlSpanElement", "HtmlButtonElement"]} 
 gloo = "0.8"
 gloo-console = "0.2.3"
 gloo-timers = "0.2.6"

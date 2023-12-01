@@ -10,7 +10,7 @@ mod prelude {
     pub use std::collections::HashMap;
     pub use std::ops::Deref;
     pub use wasm_bindgen::{JsCast, JsValue};
-    pub use web_sys::{HtmlButtonElement, HtmlInputElement, HtmlSelectElement};
+    pub use web_sys::{HtmlButtonElement, HtmlInputElement, HtmlSelectElement, HtmlSpanElement};
     pub use yew::prelude::*;
     pub use yew_router::prelude::*;
 }

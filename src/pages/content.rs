@@ -14,26 +14,12 @@ pub fn content() -> Html {
             let results_state = results_state.clone();
             let current_search_state = current_search_state.clone();
             let current_page_state = current_page_state.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                let api_key = std::env!("API_KEY");
-                let search_uri = format!(
-                    "https://api.api-ninjas.com/v1/historicalevents?text={}&offset={}",
-                    search_value, *current_page_state
-                );
-
-                let search_result = Request::get(&search_uri)
-                    .header("X-Api-Key", api_key)
-                    .send()
-                    .await;
-
-                if let Ok(res) = search_result {
-                    if res.ok() {
-                        current_search_state.set(search_value);
-                        let results: Vec<HashMap<String, String>> = res.json().await.unwrap();
-                        results_state.set(results);
-                    }
-                }
-            });
+            get_results(
+                search_value,
+                current_search_state,
+                current_page_state,
+                results_state,
+            );
         })
     };
 
@@ -64,7 +50,7 @@ pub fn content() -> Html {
                 let api_key = std::env!("API_KEY");
                 let search_value = current_search_state.deref().clone();
                 let search_uri = format!(
-                    "https://api.api-ninjas.com/v1/historicalevents?text={}&offset={}",
+                    "https://api.api-ninjas.com/v1/historicalevents?text={}offset={}",
                     search_value,
                     *current_page_state + page_amt
                 );
@@ -84,10 +70,64 @@ pub fn content() -> Html {
         })
     };
 
+    let on_update_search = {
+        let results_state = results_state.clone();
+        let current_search_state = current_search_state.clone();
+        let current_page_state = current_page_state.clone();
+        Callback::from(move |(key, value)| {
+            let current_search = current_search_state.deref().clone();
+            let new_search = format!("{}&{}={}", current_search, key, value);
+
+            use gloo_console::log;
+            log!(&new_search);
+
+            let results_state = results_state.clone();
+            let current_search_state = current_search_state.clone();
+            let current_page_state = current_page_state.clone();
+            get_results(
+                new_search,
+                current_search_state,
+                current_page_state,
+                results_state,
+            );
+        })
+    };
+
+    let on_remove_search = {
+        let results_state = results_state.clone();
+        let current_search_state = current_search_state.clone();
+        let current_page_state = current_page_state.clone();
+        Callback::from(move |tag_name: String| {
+            let current_search = current_search_state.deref().clone();
+            let new_search = { current_search.replace(&tag_name, "") };
+
+            use gloo_console::log;
+            log!(&new_search);
+
+            let results_state = results_state.clone();
+            let current_search_state = current_search_state.clone();
+            let current_page_state = current_page_state.clone();
+            get_results(
+                new_search,
+                current_search_state,
+                current_page_state,
+                results_state,
+            )
+        })
+    };
+
     let result_html = results_state
         .iter()
         .map(|result| {
-            html! {<Result result={result.clone()} />}
+            html! {<Result result={result.clone()} handle_on_click={&on_update_search} />}
+        })
+        .collect::<Html>();
+
+    let tags_html = current_search_state
+        .split("&")
+        .filter(|tag| !tag.is_empty())
+        .map(|tag| {
+            html! {<Tag text={tag.to_string()} handle_on_click={&on_remove_search} />}
         })
         .collect::<Html>();
 
@@ -96,6 +136,9 @@ pub fn content() -> Html {
             <h1>{"Historia"}</h1>
             <h2>{"Search, explore, learn."}</h2>
             <Search handle_on_search={&on_search}/>
+            <div class="row expand-x">
+                {tags_html}
+            </div>
             if !results_state.is_empty() {
                 <div class="col expand-y scroll">
                     {result_html}
@@ -107,4 +150,35 @@ pub fn content() -> Html {
             }
         </main>
     }
+}
+
+fn get_results(
+    search_value: String,
+    current_search_state: UseStateHandle<String>,
+    current_page_state: UseStateHandle<i32>,
+    results_state: UseStateHandle<Vec<HashMap<String, String>>>,
+) {
+    wasm_bindgen_futures::spawn_local(async move {
+        let api_key = std::env!("API_KEY");
+        let search_uri = format!(
+            "https://api.api-ninjas.com/v1/historicalevents?{}&offset={}",
+            search_value, *current_page_state
+        );
+
+        let search_result = Request::get(&search_uri)
+            .header("X-Api-Key", api_key)
+            .send()
+            .await;
+
+        if let Ok(res) = search_result {
+            if res.ok() {
+                current_search_state.set(search_value.clone());
+                let results: Vec<HashMap<String, String>> = res.json().await.unwrap();
+                results_state.set(results);
+            } else {
+                current_search_state.set("".to_string());
+                results_state.set(Vec::new());
+            }
+        }
+    });
 }

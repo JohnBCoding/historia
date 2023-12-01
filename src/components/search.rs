@@ -14,9 +14,11 @@ pub fn search(props: &Props) -> Html {
         Callback::from(move |event: KeyboardEvent| {
             event.prevent_default();
 
+            let element = event.target_unchecked_into::<HtmlInputElement>();
             if event.key() == "Enter" {
-                let value = event.target_unchecked_into::<HtmlInputElement>().value();
-                handle_on_search.emit(value);
+                let value = element.value();
+                element.set_value("");
+                handle_on_search.emit(format!("text={}", value));
             }
         })
     };
