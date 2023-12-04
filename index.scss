@@ -163,9 +163,15 @@ p {
     padding: 0.25em;
 }
 
+.copy-a {
+    background-color: none;
+    padding-block: 0;
+}
+
 button,
 .date,
-.tag {
+.tag,
+.copy-a {
     cursor: pointer;
 }
 

@@ -9,12 +9,14 @@ pub struct Props {
 pub fn search(props: &Props) -> Html {
     let search_ref = use_node_ref();
 
+    // Handle search on hitting enter inside search input
     let on_search = {
         let handle_on_search = props.handle_on_search.clone();
         Callback::from(move |event: KeyboardEvent| {
             event.prevent_default();
 
             let element = event.target_unchecked_into::<HtmlInputElement>();
+
             if event.key() == "Enter" {
                 let value = element.value();
                 element.set_value("");
@@ -23,6 +25,7 @@ pub fn search(props: &Props) -> Html {
         })
     };
 
+    // Handle search on click of go button
     let on_click = {
         let handle_on_search = props.handle_on_search.clone();
         let search_ref = search_ref.clone();

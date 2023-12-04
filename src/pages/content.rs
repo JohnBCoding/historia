@@ -6,6 +6,7 @@ pub fn content() -> Html {
     let current_search_state = use_state(|| "".to_string());
     let current_page_state = use_state(|| 0);
 
+    // Handle new search
     let on_search = {
         let results_state = results_state.clone();
         let current_search_state = current_search_state.clone();
@@ -23,6 +24,7 @@ pub fn content() -> Html {
         })
     };
 
+    // Handle getting new results when page is changed
     let on_change_page = {
         let results_state = results_state.clone();
         let current_search_state = current_search_state.clone();
@@ -30,6 +32,8 @@ pub fn content() -> Html {
         Callback::from(move |event: MouseEvent| {
             event.prevent_default();
 
+            // Need to check what button was pressed to determine to go backwards or forward a page
+            // API sends results in 10s, so need to change the state by 10s as well.
             let name = event.target_unchecked_into::<HtmlButtonElement>().name();
             let page_amt = match name.as_str() {
                 "back" => {
@@ -70,6 +74,7 @@ pub fn content() -> Html {
         })
     };
 
+    // Handle adding tag to current search state
     let on_update_search = {
         let results_state = results_state.clone();
         let current_search_state = current_search_state.clone();
@@ -84,9 +89,6 @@ pub fn content() -> Html {
                 }
             };
 
-            use gloo_console::log;
-            log!(&new_search);
-
             let results_state = results_state.clone();
             let current_search_state = current_search_state.clone();
             let current_page_state = current_page_state.clone();
@@ -99,6 +101,7 @@ pub fn content() -> Html {
         })
     };
 
+    // Handle removing tag from current search state
     let on_remove_search = {
         let results_state = results_state.clone();
         let current_search_state = current_search_state.clone();
@@ -106,9 +109,6 @@ pub fn content() -> Html {
         Callback::from(move |tag_name: String| {
             let current_search = current_search_state.deref().clone();
             let new_search = { current_search.replace(&tag_name, "") };
-
-            use gloo_console::log;
-            log!(&new_search);
 
             let results_state = results_state.clone();
             let current_search_state = current_search_state.clone();
@@ -122,6 +122,7 @@ pub fn content() -> Html {
         })
     };
 
+    // Generate html from results from search
     let result_html = results_state
         .iter()
         .map(|result| {
@@ -129,6 +130,7 @@ pub fn content() -> Html {
         })
         .collect::<Html>();
 
+    // Generate search tag html from current search
     let tags_html = current_search_state
         .split("&")
         .filter(|tag| !tag.is_empty())
@@ -183,6 +185,9 @@ fn get_results(
             .send()
             .await;
 
+        // We only update the search state if our response is ok
+        // if it isn't we reset the search state to empty
+        // just a small workaround from having to implement error feedback
         if let Ok(res) = search_result {
             if res.ok() {
                 current_search_state.set(search_value.clone());
